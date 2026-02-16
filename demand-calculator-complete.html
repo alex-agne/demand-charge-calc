@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demand Charge Calculator | Electric Era</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0a0f1e 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #1a1f2e;
+        }
+        
+        .rate-mode-selector {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .rate-mode-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .rate-mode-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .rate-mode-option label {
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #374151;
+        }
+        
+        .section-divider {
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .section-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .input-group input,
+        .input-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .input-group input.error {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+        
+        .input-group input[readonly] {
+            background: #f9fafb;
+            cursor: default;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .error-message {
+            font-size: 12px;
+            color: #dc2626;
+            margin-top: 4px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .rate-info-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .rate-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .rate-info-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        
+        .rate-info-utility {
+            font-size: 13px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .rate-info-description {
+            font-size: 14px;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        .rate-info-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #60a5fa;
+        }
+        
+        .rate-info-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .rate-info-link:hover {
+            text-decoration: underline;
+        }
+        
+        .season-selector {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fef3c7;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .season-selector label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        
+        .season-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .season-option input[type="radio"] {
+            cursor: pointer;
+        }
+        
+        .season-option span {
+            font-size: 14px;
+            color: #92400e;
+            cursor: pointer;
+        }
+        
+        .tariff-description {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #1e40af;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .slider-container {
+            margin-top: 10px;
+        }
+        
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .slider-value {
+            min-width: 50px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-card.battery {
+            border-left: 5px solid #3b82f6;
+        }
+        
+        .result-card.no-battery {
+            border-left: 5px solid #dc2626;
+        }
+        
+        .result-card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #666;
+        }
+        
+        .result-value {
+            font-weight: 600;
+        }
+        
+        .total {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .total-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .total-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1f2e;
+        }
+        
+        .savings {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .savings h3 {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+        
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .savings-item {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .savings-label {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .savings-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            .rate-mode-selector {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+            
+            .savings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ Electric Era Demand Charge Calculator</h1>
+        <p>See how much you could save with battery-backed EV charging</p>
+    </div>
+
+    <div class="container">
+        <!-- Inputs -->
+        <div class="input-section">
+            <h2>Rate Configuration</h2>
+            
+            <!-- Rate Mode Selection -->
+            <div class="rate-mode-selector">
+                <div class="rate-mode-option">
+                    <input type="radio" id="modeCustom" name="rateMode" value="custom" checked>
+                    <label for="modeCustom">Custom Tariff Structure</label>
+                </div>
+                <div class="rate-mode-option">
+                    <input type="radio" id="modeUtility" name="rateMode" value="utility">
+                    <label for="modeUtility">Existing Utility Rate</label>
+                </div>
+            </div>
+            
+            <!-- Custom Tariff Selection -->
+            <div id="customTariffSection">
+                <div class="section-label">Select Custom Tariff Structure</div>
+                <div class="input-group">
+                    <label>Tariff Structure Type</label>
+                    <select id="tariffStructure">
+                        <option value="standard-demand">Standard Demand Charge</option>
+                        <option value="demand-threshold">Demand Charge with Threshold</option>
+                        <option value="coincidental-peak">Coincidental Peak</option>
+                        <option value="time-of-use">Time-of-Use (TOU)</option>
+                        <option value="tiered-energy">Tiered Energy (Demand Embedded)</option>
+                        <option value="simple-energy">Simple Energy Only</option>
+                    </select>
+                </div>
+                <div id="tariffDescription" class="tariff-description"></div>
+            </div>
+            
+            <!-- Utility Rate Selection -->
+            <div id="utilityRateSection" class="hidden">
+                <div class="section-label">Select Utility Rate</div>
+                <div class="input-group">
+                    <label>Utility and Rate Schedule</label>
+                    <select id="utilityRate">
+                        <optgroup label="California">
+                            <option value="pge-bev2s">PG&E - BEV-2-S (Secondary)</option>
+                            <option value="pge-bev2p">PG&E - BEV-2-P (Primary)</option>
+                            <option value="sce-touev8">SCE - TOU-EV-8</option>
+                            <option value="sce-touev9">SCE - TOU-EV-9</option>
+                            <option value="sdge-evhp">SDG&E - EV-HP (High Power)</option>
+                        </optgroup>
+                        <optgroup label="Pacific Northwest">
+                            <option value="seattle-hlg">Seattle City Light - Schedule HLG</option>
+                            <option value="pse-49">Puget Sound Energy - Schedule 49</option>
+                            <option value="pse-59">Puget Sound Energy - Schedule 59</option>
+                            <option value="pacpower-34">Pacific Power - Schedule 34</option>
+                        </optgroup>
+                        <optgroup label="Mountain West">
+                            <option value="xcel-sg">Xcel Energy CO - Secondary General</option>
+                            <option value="xcel-cev">Xcel Energy CO - Commercial EV</option>
+                        </optgroup>
+                        <optgroup label="Southwest">
+                            <option value="srp-e32">Salt River Project - E-32 TOU</option>
+                            <option value="srp-e57">Salt River Project - E-57 Public EV</option>
+                        </optgroup>
+                        <optgroup label="Texas">
+                            <option value="tx-comp">Texas Competitive - Commercial TOU</option>
+                        </optgroup>
+                        <optgroup label="Florida">
+                            <option value="fpl-gsdt1">Florida Power & Light - GSDT-1</option>
+                            <option value="fpl-cilc1">Florida Power & Light - CILC-1</option>
+                        </optgroup>
+                        <optgroup label="Northeast">
+                            <option value="coned-sc9">Con Edison NYC - SC-9 Rate II</option>
+                            <option value="pepco-gs">Pepco DC - General Service</option>
+                        </optgroup>
+                        <optgroup label="Other Regions">
+                            <option value="heco-p">Hawaiian Electric - Schedule P</option>
+                            <option value="gapower-pev5">Georgia Power - TOU-PEV-5</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div id="rateInfoCard"></div>
+                <div id="seasonSelector" class="season-selector hidden">
+                    <label>Season:</label>
+                    <div class="season-option">
+                        <input type="radio" id="seasonSummer" name="season" value="summer" checked>
+                        <span onclick="document.getElementById('seasonSummer').click()">Summer</span>
+                    </div>
+                    <div class="season-option">
+                        <input type="radio" id="seasonWinter" name="season" value="winter">
+                        <span onclick="document.getElementById('seasonWinter').click()">Winter</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tariff-Specific Inputs -->
+            <div class="section-divider">
+                <div class="section-label">Rate Details</div>
+                <div class="input-grid" id="tariffInputs">
+                    <!-- Inputs will be dynamically added here -->
+                </div>
+            </div>
+            
+            <!-- Station Hardware Configuration -->
+            <div class="section-divider">
+                <div class="section-label">Station Hardware</div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Sessions Per Day</label>
+                        <input type="number" id="sessionsPerDay" value="5" min="0" step="0.1">
+                        <span class="hint">Can be a decimal (e.g., 2.5)</span>
+                        <span class="error-message" id="sessionsError">Must be 0 or greater</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Energy Per Session (kWh)</label>
+                        <input type="number" id="energyPerSession" value="35" min="0" step="0.1">
+                        <span class="error-message" id="energyError">Must be 0 or greater</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Charger Type</label>
+                        <select id="chargerType">
+                            <option value="200">200 kW Dual Port</option>
+                            <option value="400">400 kW Dual Port</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Number of Chargers</label>
+                        <input type="number" id="chargerQuantity" value="4" min="2" max="12">
+                        <span class="error-message" id="quantityError">Must be between 2 and 12</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Non-Battery Max Draw (kW)</label>
+                        <input type="number" id="noBatteryMaxDraw" value="800" min="0">
+                        <span class="hint" id="maxDrawHint">Auto-calculated</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Battery Options -->
+            <div class="section-divider">
+                <div class="section-label">Advanced Battery Settings</div>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="customBatteryToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Customize battery max draw (default uses optimized tiers)</span>
+                </div>
+                
+                <div id="customBatteryInputs" class="hidden" style="margin-top: 20px;">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Battery Max Draw (kW)</label>
+                            <input type="number" id="customBatteryMaxDraw" value="20" min="0" step="5">
+                            <span class="hint">Override automatic battery sizing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results">
+            <!-- Battery-Backed -->
+            <div class="result-card battery">
+                <h3>Battery-Backed Station</h3>
+                <div class="result-row">
+                    <span class="result-label">Energy Charge</span>
+                    <span class="result-value" id="battery-energy">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Max Grid Draw</span>
+                    <span class="result-value" id="battery-draw">0 kW</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Demand Charge</span>
+                    <span class="result-value" id="battery-demand">$0.00</span>
+                </div>
+                <div class="total">
+                    <div class="total-label">Total Monthly Bill</div>
+                    <div class="total-amount" id="battery-total">$0.00</div>
+                </div>
+            </div>
+
+            <!-- Non-Battery -->
+            <div class="result-card no-battery">
+                <h3>Non-Battery Station</h3>
+                <div class="result-row">
+                    <span class="result-label">Energy Charge</span>
+                    <span class="result-value" id="nobattery-energy">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Max Grid Draw</span>
+                    <span class="result-value" id="nobattery-draw">0 kW</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Demand Charge</span>
+                    <span class="result-value" id="nobattery-demand">$0.00</span>
+                </div>
+                <div class="total">
+                    <div class="total-label">Total Monthly Bill</div>
+                    <div class="total-amount" id="nobattery-total">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings -->
+        <div class="savings">
+            <h3>Your Potential Savings</h3>
+            <div class="savings-grid">
+                <div class="savings-item">
+                    <div class="savings-label">Monthly Savings</div>
+                    <div class="savings-value" id="monthly-savings">$0</div>
+                </div>
+                <div class="savings-item">
+                    <div class="savings-label">Annual Savings</div>
+                    <div class="savings-value" id="annual-savings">$0</div>
+                </div>
+                <div class="savings-item">
+                    <div class="savings-label">Cost Reduction</div>
+                    <div class="savings-value" id="percent-savings">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility Rates Database - WITH GEMINI'S RESEARCH IMPROVEMENTS
+        const utilityRates = {
+            'pge-bev2s': {
+                name: 'BEV-2-S (Secondary)',
+                utility: 'Pacific Gas & Electric',
+                state: 'CA',
+                description: 'Commercial EV charging with seasonal TOU and subscription block demand.',
+                calcMethod: 'subscription-block',
+                blockSize: 50,
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.35518, offpeakEnergy: 0.16317, blockPrice: 95.56 },
+                    winter: { peakEnergy: 0.36798, offpeakEnergy: 0.15475, blockPrice: 95.56 }
+                },
+                url: 'https://www.pge.com/tariffs/en/rate-schedules/bev2.html'
+            },
+            'pge-bev2p': {
+                name: 'BEV-2-P (Primary)',
+                utility: 'Pacific Gas & Electric',
+                state: 'CA',
+                description: 'For installations >200kW with subscription block demand',
+                calcMethod: 'subscription-block',
+                blockSize: 500,
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.32259, offpeakEnergy: 0.13885, blockPrice: 767.68 },
+                    winter: { peakEnergy: 0.33477, offpeakEnergy: 0.13072, blockPrice: 767.68 }
+                },
+                url: 'https://www.pge.com/tariffs/en/rate-schedules/bev2.html'
+            },
+            'sce-touev8': {
+                name: 'TOU-EV-8',
+                utility: 'Southern California Edison',
+                state: 'CA',
+                description: 'Time-of-use energy rates with demand charge holiday (currently waived).',
+                calcMethod: 'demand-holiday',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.4441, offpeakEnergy: 0.1319, demandCharge: 0 },
+                    winter: { peakEnergy: 0.4441, offpeakEnergy: 0.1347, demandCharge: 0 }
+                },
+                url: 'https://www.sce.com/business/rates-financing/time-of-use-rate-plans/electric-vehicle-rates'
+            },
+            'sce-touev9': {
+                name: 'TOU-EV-9',
+                utility: 'Southern California Edison',
+                state: 'CA',
+                description: 'Simplified TOU with lower demand charges',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.3825, offpeakEnergy: 0.1168, demandCharge: 14.32 },
+                    winter: { peakEnergy: 0.3825, offpeakEnergy: 0.1184, demandCharge: 14.32 }
+                },
+                url: 'https://www.sce.com/business/rates-financing/time-of-use-rate-plans/electric-vehicle-rates'
+            },
+            'sdge-evhp': {
+                name: 'EV-HP (High Power)',
+                utility: 'San Diego Gas & Electric',
+                state: 'CA',
+                description: 'Subscription-based rate for EV charging.',
+                calcMethod: 'subscription-block',
+                blockSize: 10,
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.41678, offpeakEnergy: 0.18761, blockPrice: 20.00 },
+                    winter: { peakEnergy: 0.40966, offpeakEnergy: 0.14678, blockPrice: 20.00 }
+                },
+                url: 'https://www.sdge.com/business/electric-vehicles/power-your-drive-for-fleets/ev-hp'
+            },
+            'seattle-hlg': {
+                name: 'Schedule HLG',
+                utility: 'Seattle City Light',
+                state: 'WA',
+                description: 'Standard high demand general service with TOU.',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { peakEnergy: 0.0675, offpeakEnergy: 0.0395, demandCharge: 5.39 },
+                url: 'https://www.seattle.gov/city-light/business-solutions/rates'
+            },
+            'pse-49': {
+                name: 'Schedule 49 (Large Power)',
+                utility: 'Puget Sound Energy',
+                state: 'WA',
+                description: 'Standard commercial rate for large loads',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { energyRate: 0.0521, demandCharge: 9.87 },
+                url: 'https://www.pse.com/en/pages/rates-and-regulations'
+            },
+            'pse-59': {
+                name: 'Schedule 59 (Commercial EV)',
+                utility: 'Puget Sound Energy',
+                state: 'WA',
+                description: 'Dedicated EV rate with standard demand charges.',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.08, offpeakEnergy: 0.04, demandCharge: 7.50 },
+                    winter: { peakEnergy: 0.08, offpeakEnergy: 0.04, demandCharge: 7.50 }
+                },
+                url: 'https://www.pse.com/en/pages/rates-and-regulations'
+            },
+            'pacpower-34': {
+                name: 'Schedule 34 (Commercial)',
+                utility: 'Pacific Power',
+                state: 'OR/WA/CA',
+                description: 'Standard commercial rate with demand',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { energyRate: 0.0618, demandCharge: 11.42 },
+                url: 'https://www.pacificpower.net/savings-energy-choices/pricing-rate-schedules.html'
+            },
+            'xcel-sg': {
+                name: 'Secondary General (SG)',
+                utility: 'Xcel Energy Colorado',
+                state: 'CO',
+                description: 'General commercial with seasonal TOU',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.0782, offpeakEnergy: 0.0365, demandCharge: 15.77 },
+                    winter: { peakEnergy: 0.0613, offpeakEnergy: 0.0398, demandCharge: 15.77 }
+                },
+                url: 'https://www.xcelenergy.com/staticfiles/xe-responsive/Company/Rates%20&%20Regulations/Co_Elec_Rates.pdf'
+            },
+            'xcel-cev': {
+                name: 'Commercial EV (C-EV)',
+                utility: 'Xcel Energy Colorado',
+                state: 'CO',
+                description: 'Dedicated EV rate with lower demand charges',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.0650, offpeakEnergy: 0.0285, demandCharge: 11.25 },
+                    winter: { energyRate: 0.0450, demandCharge: 11.25 }
+                },
+                url: 'https://www.xcelenergy.com/staticfiles/xe-responsive/Company/Rates%20&%20Regulations/Co_Elec_Rates.pdf'
+            },
+            'srp-e32': {
+                name: 'E-32 TOU',
+                utility: 'Salt River Project',
+                state: 'AZ',
+                description: 'Medium general service with TOU',
+                calcMethod: 'dual-demand',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.0923, offpeakEnergy: 0.0489, onpeakDemand: 16.50, offpeakDemand: 6.00 },
+                    winter: { peakEnergy: 0.0756, offpeakEnergy: 0.0489, onpeakDemand: 16.50, offpeakDemand: 6.00 }
+                },
+                url: 'https://www.srpnet.com/prices/business/schedules.aspx'
+            },
+            'srp-e57': {
+                name: 'E-57 Public EV',
+                utility: 'Salt River Project',
+                state: 'AZ',
+                description: 'Dedicated public EV charging rate',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.1125, offpeakEnergy: 0.0325, demandCharge: 19.00 },
+                    winter: { energyRate: 0.0525, demandCharge: 0 }
+                },
+                url: 'https://www.srpnet.com/prices/business/schedules.aspx'
+            },
+            'tx-comp': {
+                name: 'Commercial TOU',
+                utility: 'Texas Competitive Market',
+                state: 'TX',
+                description: 'Representative competitive market rate',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { peakEnergy: 0.09, offpeakEnergy: 0.05, demandCharge: 8.50 },
+                url: 'http://www.powertochoose.org'
+            },
+            'fpl-gsdt1': {
+                name: 'GSDT-1',
+                utility: 'Florida Power & Light',
+                state: 'FL',
+                description: 'General service demand TOU',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { peakEnergy: 0.0821, offpeakEnergy: 0.0356, demandCharge: 10.95 },
+                url: 'https://www.fpl.com/rates/pdf/electric-tariff.pdf'
+            },
+            'fpl-cilc1': {
+                name: 'CILC-1',
+                utility: 'Florida Power & Light',
+                state: 'FL',
+                description: 'Commercial industrial load control',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { energyRate: 0.0450, demandCharge: 13.20 },
+                url: 'https://www.fpl.com/rates/pdf/electric-tariff.pdf'
+            },
+            'coned-sc9': {
+                name: 'SC-9 Rate II',
+                utility: 'Consolidated Edison',
+                state: 'NY',
+                description: 'NYC commercial with high demand charges',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.1650, offpeakEnergy: 0.0312, demandCharge: 31.51 },
+                    winter: { peakEnergy: 0.0875, offpeakEnergy: 0.0312, demandCharge: 31.51 }
+                },
+                url: 'https://www.coned.com/en/accounts-billing/your-bill/service-classifications'
+            },
+            'pepco-gs': {
+                name: 'General Service',
+                utility: 'Potomac Electric (Pepco)',
+                state: 'DC/MD',
+                description: 'Standard general service with demand',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { energyRate: 0.0725, demandCharge: 12.33 },
+                url: 'https://www.pepco.com/SmartEnergy/MyAccount/Pages/RatesAndTariffs.aspx'
+            },
+            'heco-p': {
+                name: 'Schedule P',
+                utility: 'Hawaiian Electric',
+                state: 'HI',
+                description: 'Commercial power with high energy costs',
+                calcMethod: 'standard',
+                hasSeasonal: false,
+                rates: { energyRate: 0.2650, demandCharge: 18.75 },
+                url: 'https://www.hawaiianelectric.com/products-and-services/customer-service/rates'
+            },
+            'gapower-pev5': {
+                name: 'TOU-PEV-5',
+                utility: 'Georgia Power',
+                state: 'GA',
+                description: 'Public EV charging with TOU',
+                calcMethod: 'standard',
+                hasSeasonal: true,
+                rates: {
+                    summer: { peakEnergy: 0.1180, offpeakEnergy: 0.0155, demandCharge: 15.08 },
+                    winter: { peakEnergy: 0.0890, offpeakEnergy: 0.0155, demandCharge: 15.08 }
+                },
+                url: 'https://www.georgiapower.com/business/products-programs/electric-transportation.html'
+            }
+        };
+
+        // Custom Tariff structure definitions
+        const tariffStructures = {
+            'standard-demand': {
+                name: 'Standard Demand Charge',
+                description: 'Energy charges plus a demand charge based on your peak 15-minute kW draw during the month.',
+                inputs: [
+                    { id: 'energyRate', label: 'Energy Rate ($/kWh)', type: 'number', value: 0.07394, step: 0.001, min: 0 },
+                    { id: 'demandRate', label: 'Demand Rate ($/kW)', type: 'number', value: 6.54, step: 0.01, min: 0 }
+                ]
+            },
+            'demand-threshold': {
+                name: 'Demand Charge with Threshold',
+                description: 'Energy charges plus demand charges only above a certain kW threshold (common in PUD rates).',
+                inputs: [
+                    { id: 'energyRate', label: 'Energy Rate ($/kWh)', type: 'number', value: 0.07394, step: 0.001, min: 0 },
+                    { id: 'demandRate', label: 'Demand Rate ($/kW)', type: 'number', value: 6.54, step: 0.01, min: 0 },
+                    { id: 'demandThreshold', label: 'Demand Threshold (kW)', type: 'number', value: 50, step: 1, min: 0 }
+                ]
+            },
+            'coincidental-peak': {
+                name: 'Coincidental Peak',
+                description: 'Energy charges plus a demand charge based on your usage during the utility\'s system peak hours.',
+                inputs: [
+                    { id: 'energyRate', label: 'Energy Rate ($/kWh)', type: 'number', value: 0.06, step: 0.001, min: 0 },
+                    { id: 'peakDemandRate', label: 'Coincidental Peak Rate ($/kW)', type: 'number', value: 14.33, step: 0.01, min: 0 },
+                    { id: 'standardDemandRate', label: 'Standard Demand Rate ($/kW)', type: 'number', value: 5.21, step: 0.01, min: 0 }
+                ]
+            },
+            'time-of-use': {
+                name: 'Time-of-Use (TOU)',
+                description: 'Different energy rates for peak vs. off-peak hours, with optional demand charges.',
+                inputs: [
+                    { id: 'peakEnergyRate', label: 'Peak Energy Rate ($/kWh)', type: 'number', value: 0.12, step: 0.001, min: 0 },
+                    { id: 'offpeakEnergyRate', label: 'Off-Peak Energy Rate ($/kWh)', type: 'number', value: 0.06, step: 0.001, min: 0 },
+                    { id: 'demandRate', label: 'Demand Rate ($/kW, 0 if none)', type: 'number', value: 0, step: 0.01, min: 0 }
+                ],
+                extraControls: true
+            },
+            'tiered-energy': {
+                name: 'Tiered Energy (Demand Embedded)',
+                description: 'Energy sold in blocks where block sizes grow with your billing demand. Lower rates unlock at higher volumes.',
+                inputs: [
+                    { id: 'block1Multiplier', label: 'Block 1 Size (kWh per kW demand)', type: 'number', value: 100, step: 10, min: 0 },
+                    { id: 'block1Rate', label: 'Block 1 Energy Rate ($/kWh)', type: 'number', value: 0.20, step: 0.001, min: 0 },
+                    { id: 'block2Rate', label: 'Block 2 Energy Rate ($/kWh)', type: 'number', value: 0.10, step: 0.001, min: 0 }
+                ]
+            },
+            'simple-energy': {
+                name: 'Simple Energy Only',
+                description: 'Just energy charges with no demand component (rare for commercial charging).',
+                inputs: [
+                    { id: 'energyRate', label: 'Energy Rate ($/kWh)', type: 'number', value: 0.10, step: 0.001, min: 0 }
+                ]
+            }
+        };
+
+        // Get elements
+        const modeCustom = document.getElementById('modeCustom');
+        const modeUtility = document.getElementById('modeUtility');
+        const customTariffSection = document.getElementById('customTariffSection');
+        const utilityRateSection = document.getElementById('utilityRateSection');
+        const tariffSelect = document.getElementById('tariffStructure');
+        const utilityRateSelect = document.getElementById('utilityRate');
+        const tariffDescription = document.getElementById('tariffDescription');
+        const tariffInputsContainer = document.getElementById('tariffInputs');
+        const rateInfoCard = document.getElementById('rateInfoCard');
+        const seasonSelector = document.getElementById('seasonSelector');
+        
+        const stationInputs = {
+            sessionsPerDay: document.getElementById('sessionsPerDay'),
+            energyPerSession: document.getElementById('energyPerSession'),
+            chargerType: document.getElementById('chargerType'),
+            chargerQuantity: document.getElementById('chargerQuantity'),
+            noBatteryMaxDraw: document.getElementById('noBatteryMaxDraw')
+        };
+
+        const customBatteryToggle = document.getElementById('customBatteryToggle');
+        const customBatteryInputs = document.getElementById('customBatteryInputs');
+        const customBatteryMaxDraw = document.getElementById('customBatteryMaxDraw');
+
+        let tariffInputs = {};
+        let peakPercentageSlider = null;
+        let currentMode = 'custom';
+
+        // Battery max draw
+        function getBatteryMaxDraw(sessionsPerDay) {
+            if (customBatteryToggle.checked) {
+                return validateInput(customBatteryMaxDraw.value);
+            }
+            if (sessionsPerDay <= 10) return 20;
+            if (sessionsPerDay <= 20) return 40;
+            if (sessionsPerDay <= 30) return 60;
+            if (sessionsPerDay <= 40) return 80;
+            return 100;
+        }
+
+        function getBatteryMaxDrawAuto(sessionsPerDay) {
+            if (sessionsPerDay <= 10) return 20;
+            if (sessionsPerDay <= 20) return 40;
+            if (sessionsPerDay <= 30) return 60;
+            if (sessionsPerDay <= 40) return 80;
+            return 100;
+        }
+
+        // Toggle custom battery
+        customBatteryToggle.addEventListener('change', function() {
+            if (this.checked) {
+                customBatteryInputs.classList.remove('hidden');
+                const currentAuto = getBatteryMaxDrawAuto(validateInput(stationInputs.sessionsPerDay.value));
+                customBatteryMaxDraw.value = currentAuto;
+            } else {
+                customBatteryInputs.classList.add('hidden');
+            }
+            calculate();
+        });
+
+        customBatteryMaxDraw.addEventListener('input', calculate);
+
+        // Rate mode toggle
+        modeCustom.addEventListener('change', function() {
+            if (this.checked) {
+                currentMode = 'custom';
+                customTariffSection.classList.remove('hidden');
+                utilityRateSection.classList.add('hidden');
+                renderTariffInputs();
+            }
+        });
+
+        modeUtility.addEventListener('change', function() {
+            if (this.checked) {
+                currentMode = 'utility';
+                customTariffSection.classList.add('hidden');
+                utilityRateSection.classList.remove('hidden');
+                loadUtilityRate();
+            }
+        });
+
+        // Load and display utility rate
+        function loadUtilityRate() {
+            const rateId = utilityRateSelect.value;
+            const rate = utilityRates[rateId];
+            
+            // Display rate info card
+            const hasSeasonal = rate.hasSeasonal;
+            const currentSeason = hasSeasonal ? (document.querySelector('input[name="season"]:checked')?.value || 'summer') : null;
+            
+            rateInfoCard.innerHTML = `
+                <div class="rate-info-card">
+                    <div class="rate-info-header">
+                        <div>
+                            <div class="rate-info-title">${rate.name}</div>
+                            <div class="rate-info-utility">${rate.utility} • ${rate.state}</div>
+                        </div>
+                    </div>
+                    <div class="rate-info-description">${rate.description}</div>
+                    <div class="rate-info-meta">
+                        ${hasSeasonal ? '<span>📅 Seasonal Rates</span>' : ''}
+                        <a href="${rate.url}" target="_blank" class="rate-info-link">View Official Tariff →</a>
+                    </div>
+                </div>
+            `;
+            
+            // Show/hide season selector
+            if (hasSeasonal) {
+                seasonSelector.classList.remove('hidden');
+            } else {
+                seasonSelector.classList.add('hidden');
+            }
+            
+            renderUtilityRateInputs(rate, currentSeason);
+        }
+
+        // Render utility rate inputs
+        function renderUtilityRateInputs(rate, season) {
+            tariffInputsContainer.innerHTML = '';
+            tariffInputs = {};
+            peakPercentageSlider = null;
+            
+            const rateData = rate.hasSeasonal ? rate.rates[season || 'summer'] : rate.rates;
+            
+            // Create read-only display of rates
+            const ratesDisplay = [];
+            
+            if (rateData.peakEnergy !== undefined) {
+                ratesDisplay.push({ label: 'Peak Energy', value: '$' + rateData.peakEnergy.toFixed(4) + '/kWh' });
+            }
+            if (rateData.offpeakEnergy !== undefined) {
+                ratesDisplay.push({ label: 'Off-Peak Energy', value: '$' + rateData.offpeakEnergy.toFixed(4) + '/kWh' });
+            }
+            if (rateData.onpeakEnergy !== undefined) {
+                ratesDisplay.push({ label: 'On-Peak Energy', value: '$' + rateData.onpeakEnergy.toFixed(4) + '/kWh' });
+            }
+            if (rateData.midpeakEnergy !== undefined) {
+                ratesDisplay.push({ label: 'Mid-Peak Energy', value: '$' + rateData.midpeakEnergy.toFixed(4) + '/kWh' });
+            }
+            if (rateData.energyRate !== undefined) {
+                ratesDisplay.push({ label: 'Energy Rate', value: '$' + rateData.energyRate.toFixed(4) + '/kWh' });
+            }
+            if (rateData.demandCharge !== undefined) {
+                ratesDisplay.push({ label: 'Demand Charge', value: '$' + rateData.demandCharge.toFixed(2) + '/kW' });
+            }
+            if (rateData.onpeakDemand !== undefined) {
+                ratesDisplay.push({ label: 'On-Peak Demand', value: '$' + rateData.onpeakDemand.toFixed(2) + '/kW' });
+            }
+            if (rateData.offpeakDemand !== undefined) {
+                ratesDisplay.push({ label: 'Off-Peak Demand', value: '$' + rateData.offpeakDemand.toFixed(2) + '/kW' });
+            }
+            
+            // GEMINI IMPROVEMENT: Show block pricing for subscription-block rates
+            if (rate.calcMethod === 'subscription-block' && rateData.blockPrice !== undefined) {
+                ratesDisplay.push({ label: `Subscription Block (${rate.blockSize}kW)`, value: '$' + rateData.blockPrice.toFixed(2) + '/month' });
+            }
+            
+            ratesDisplay.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                div.innerHTML = `
+                    <label>${item.label}</label>
+                    <input type="text" value="${item.value}" readonly>
+                `;
+                tariffInputsContainer.appendChild(div);
+            });
+            
+            // Add peak percentage slider if TOU
+            if (rateData.peakEnergy !== undefined || rateData.onpeakEnergy !== undefined) {
+                const sliderDiv = document.createElement('div');
+                sliderDiv.className = 'input-group';
+                sliderDiv.innerHTML = `
+                    <label>Peak Hours Usage</label>
+                    <div class="slider-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="peakPercentage" min="0" max="100" value="50">
+                            <span class="slider-value">50%</span>
+                        </div>
+                    </div>
+                    <span class="hint">Adjust based on your expected charging patterns</span>
+                `;
+                tariffInputsContainer.appendChild(sliderDiv);
+                
+                peakPercentageSlider = document.getElementById('peakPercentage');
+                const sliderValue = sliderDiv.querySelector('.slider-value');
+                peakPercentageSlider.addEventListener('input', function() {
+                    sliderValue.textContent = this.value + '%';
+                    calculate();
+                });
+            }
+            
+            calculate();
+        }
+
+        // Render custom tariff inputs
+        function renderTariffInputs() {
+            if (currentMode !== 'custom') return;
+            
+            const structure = tariffStructures[tariffSelect.value];
+            tariffDescription.textContent = structure.description;
+            
+            tariffInputsContainer.innerHTML = '';
+            tariffInputs = {};
+            peakPercentageSlider = null;
+            
+            structure.inputs.forEach(inputDef => {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                
+                const label = document.createElement('label');
+                label.textContent = inputDef.label;
+                
+                const input = document.createElement('input');
+                input.type = inputDef.type;
+                input.id = inputDef.id;
+                input.value = inputDef.value;
+                if (inputDef.step) input.step = inputDef.step;
+                if (inputDef.min !== undefined) input.min = inputDef.min;
+                if (inputDef.max !== undefined) input.max = inputDef.max;
+                
+                input.addEventListener('input', calculate);
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                tariffInputsContainer.appendChild(div);
+                
+                tariffInputs[inputDef.id] = input;
+            });
+            
+            // Add peak percentage slider for TOU
+            if (structure.extraControls && tariffSelect.value === 'time-of-use') {
+                const sliderDiv = document.createElement('div');
+                sliderDiv.className = 'input-group';
+                sliderDiv.innerHTML = `
+                    <label>Peak Hours Usage</label>
+                    <div class="slider-container">
+                        <div class="slider-wrapper">
+                            <input type="range" class="slider" id="peakPercentage" min="0" max="100" value="50">
+                            <span class="slider-value">50%</span>
+                        </div>
+                    </div>
+                    <span class="hint">Adjust based on your expected charging patterns</span>
+                `;
+                tariffInputsContainer.appendChild(sliderDiv);
+                
+                peakPercentageSlider = document.getElementById('peakPercentage');
+                const sliderValue = sliderDiv.querySelector('.slider-value');
+                peakPercentageSlider.addEventListener('input', function() {
+                    sliderValue.textContent = this.value + '%';
+                    calculate();
+                });
+            }
+            
+            calculate();
+        }
+
+        // GEMINI'S IMPROVED CALCULATION FUNCTION
+        function calculateCosts(sessionsPerDay, energyPerSession, batteryMaxDraw, noBatteryMaxDraw) {
+            const monthlyDays = 30;
+            const totalSessions = sessionsPerDay * monthlyDays;
+            const totalEnergy = totalSessions * energyPerSession;
+            
+            let batteryCost = 0, noBatteryCost = 0;
+            let batteryEnergyCharge = 0, batteryDemandCharge = 0;
+            let noBatteryEnergyCharge = 0, noBatteryDemandCharge = 0;
+            
+            if (currentMode === 'utility') {
+                const rateId = utilityRateSelect.value;
+                const rate = utilityRates[rateId];
+                const season = rate.hasSeasonal ? (document.querySelector('input[name="season"]:checked')?.value || 'summer') : null;
+                const rateData = rate.hasSeasonal ? rate.rates[season] : rate.rates;
+                
+                const peakPercentage = peakPercentageSlider ? (parseFloat(peakPercentageSlider.value) / 100) : 0.5;
+                
+                // Calculate energy charges - GEMINI'S IMPROVED FORMULA
+                if (rateData.peakEnergy !== undefined && rateData.offpeakEnergy !== undefined) {
+                    batteryEnergyCharge = totalEnergy * ((peakPercentage * rateData.peakEnergy) + ((1 - peakPercentage) * rateData.offpeakEnergy));
+                } else if (rateData.energyRate !== undefined) {
+                    batteryEnergyCharge = totalEnergy * rateData.energyRate;
+                }
+                noBatteryEnergyCharge = batteryEnergyCharge;
+                
+                // GEMINI'S NEW CALCULATION METHODS
+                const calcMethod = rate.calcMethod || 'standard';
+                
+                switch(calcMethod) {
+                    case 'subscription-block':
+                        // NEW: Subscription block pricing (PG&E BEV-2-S, SDG&E EV-HP)
+                        const blockSize = rate.blockSize || 50;
+                        const blockPrice = rateData.blockPrice || 0;
+                        batteryDemandCharge = Math.ceil(batteryMaxDraw / blockSize) * blockPrice;
+                        noBatteryDemandCharge = Math.ceil(noBatteryMaxDraw / blockSize) * blockPrice;
+                        break;
+                        
+                    case 'demand-holiday':
+                        // NEW: Demand charge holiday (SCE TOU-EV-8)
+                        batteryDemandCharge = 0;
+                        noBatteryDemandCharge = 0;
+                        break;
+                        
+                    case 'dual-demand':
+                        // NEW: Dual demand charges (SRP E-32)
+                        const onpeakDemand = rateData.onpeakDemand || 0;
+                        const offpeakDemand = rateData.offpeakDemand || 0;
+                        batteryDemandCharge = (batteryMaxDraw * onpeakDemand) + (batteryMaxDraw * offpeakDemand);
+                        noBatteryDemandCharge = (noBatteryMaxDraw * onpeakDemand) + (noBatteryMaxDraw * offpeakDemand);
+                        break;
+                        
+                    default:
+                        // Standard demand charge
+                        const demandRate = rateData.demandCharge || 0;
+                        batteryDemandCharge = batteryMaxDraw * demandRate;
+                        noBatteryDemandCharge = noBatteryMaxDraw * demandRate;
+                        break;
+                }
+                
+                batteryCost = batteryEnergyCharge + batteryDemandCharge;
+                noBatteryCost = noBatteryEnergyCharge + noBatteryDemandCharge;
+                
+            } else {
+                // Custom tariff calculation
+                const structure = tariffSelect.value;
+                const peakPercentage = peakPercentageSlider ? (parseFloat(peakPercentageSlider.value) / 100) : 0.5;
+                
+                switch(structure) {
+                    case 'standard-demand':
+                        const energyRate = parseFloat(tariffInputs.energyRate.value) || 0;
+                        const demandRate = parseFloat(tariffInputs.demandRate.value) || 0;
+                        batteryEnergyCharge = totalEnergy * energyRate;
+                        batteryDemandCharge = batteryMaxDraw * demandRate;
+                        batteryCost = batteryEnergyCharge + batteryDemandCharge;
+                        noBatteryEnergyCharge = totalEnergy * energyRate;
+                        noBatteryDemandCharge = noBatteryMaxDraw * demandRate;
+                        noBatteryCost = noBatteryEnergyCharge + noBatteryDemandCharge;
+                        break;
+                        
+                    case 'demand-threshold':
+                        const energyRate2 = parseFloat(tariffInputs.energyRate.value) || 0;
+                        const demandRate2 = parseFloat(tariffInputs.demandRate.value) || 0;
+                        const threshold = parseFloat(tariffInputs.demandThreshold.value) || 0;
+                        batteryEnergyCharge = totalEnergy * energyRate2;
+                        batteryDemandCharge = Math.max(0, batteryMaxDraw - threshold) * demandRate2;
+                        batteryCost = batteryEnergyCharge + batteryDemandCharge;
+                        noBatteryEnergyCharge = totalEnergy * energyRate2;
+                        noBatteryDemandCharge = Math.max(0, noBatteryMaxDraw - threshold) * demandRate2;
+                        noBatteryCost = noBatteryEnergyCharge + noBatteryDemandCharge;
+                        break;
+                        
+                    case 'coincidental-peak':
+                        const energyRate3 = parseFloat(tariffInputs.energyRate.value) || 0;
+                        const peakRate = parseFloat(tariffInputs.peakDemandRate.value) || 0;
+                        const standardRate = parseFloat(tariffInputs.standardDemandRate.value) || 0;
+                        batteryEnergyCharge = totalEnergy * energyRate3;
+                        batteryDemandCharge = (batteryMaxDraw * peakRate) + (batteryMaxDraw * standardRate);
+                        batteryCost = batteryEnergyCharge + batteryDemandCharge;
+                        noBatteryEnergyCharge = totalEnergy * energyRate3;
+                        noBatteryDemandCharge = (noBatteryMaxDraw * peakRate) + (noBatteryMaxDraw * standardRate);
+                        noBatteryCost = noBatteryEnergyCharge + noBatteryDemandCharge;
+                        break;
+                        
+                    case 'time-of-use':
+                        const peakEnergy = parseFloat(tariffInputs.peakEnergyRate.value) || 0;
+                        const offpeakEnergy = parseFloat(tariffInputs.offpeakEnergyRate.value) || 0;
+                        const touDemandRate = parseFloat(tariffInputs.demandRate.value) || 0;
+                        
+                        // GEMINI'S IMPROVED ENERGY CALCULATION
+                        batteryEnergyCharge = totalEnergy * ((peakPercentage * peakEnergy) + ((1 - peakPercentage) * offpeakEnergy));
+                        batteryDemandCharge = batteryMaxDraw * touDemandRate;
+                        batteryCost = batteryEnergyCharge + batteryDemandCharge;
+                        
+                        noBatteryEnergyCharge = totalEnergy * ((peakPercentage * peakEnergy) + ((1 - peakPercentage) * offpeakEnergy));
+                        noBatteryDemandCharge = noBatteryMaxDraw * touDemandRate;
+                        noBatteryCost = noBatteryEnergyCharge + noBatteryDemandCharge;
+                        break;
+                        
+                    case 'tiered-energy':
+                        const multiplier = parseFloat(tariffInputs.block1Multiplier.value) || 100;
+                        const block1Rate = parseFloat(tariffInputs.block1Rate.value) || 0;
+                        const block2Rate = parseFloat(tariffInputs.block2Rate.value) || 0;
+                        
+                        // Battery case
+                        const batteryBlock1Size = batteryMaxDraw * multiplier;
+                        const batteryBlock1Energy = Math.min(totalEnergy, batteryBlock1Size);
+                        const batteryBlock2Energy = Math.max(0, totalEnergy - batteryBlock1Size);
+                        batteryCost = (batteryBlock1Energy * block1Rate) + (batteryBlock2Energy * block2Rate);
+                        batteryEnergyCharge = batteryCost;
+                        batteryDemandCharge = 0;
+                        
+                        // No battery case
+                        const noBatteryBlock1Size = noBatteryMaxDraw * multiplier;
+                        const noBatteryBlock1Energy = Math.min(totalEnergy, noBatteryBlock1Size);
+                        const noBatteryBlock2Energy = Math.max(0, totalEnergy - noBatteryBlock1Size);
+                        noBatteryCost = (noBatteryBlock1Energy * block1Rate) + (noBatteryBlock2Energy * block2Rate);
+                        noBatteryEnergyCharge = noBatteryCost;
+                        noBatteryDemandCharge = 0;
+                        break;
+                        
+                    case 'simple-energy':
+                        const simpleRate = parseFloat(tariffInputs.energyRate.value) || 0;
+                        batteryCost = totalEnergy * simpleRate;
+                        noBatteryCost = totalEnergy * simpleRate;
+                        batteryEnergyCharge = batteryCost;
+                        batteryDemandCharge = 0;
+                        noBatteryEnergyCharge = noBatteryCost;
+                        noBatteryDemandCharge = 0;
+                        break;
+                }
+            }
+            
+            return { 
+                batteryCost, 
+                noBatteryCost, 
+                totalEnergy,
+                batteryEnergyCharge,
+                batteryDemandCharge,
+                noBatteryEnergyCharge,
+                noBatteryDemandCharge
+            };
+        }
+
+        // Validate input values
+        function validateInput(value, min = 0, max = Infinity) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return 0;
+            return Math.max(min, Math.min(max, num));
+        }
+
+        function showValidationError(inputElement, errorElement, isValid) {
+            if (!isValid) {
+                inputElement.classList.add('error');
+                errorElement.classList.add('show');
+            } else {
+                inputElement.classList.remove('error');
+                errorElement.classList.remove('show');
+            }
+        }
+
+        // Update calculations
+        function calculate() {
+            const sessionsPerDay = validateInput(stationInputs.sessionsPerDay.value);
+            const energyPerSession = validateInput(stationInputs.energyPerSession.value);
+            const chargerType = parseInt(stationInputs.chargerType.value) || 200;
+            const chargerQuantity = validateInput(stationInputs.chargerQuantity.value, 2, 12);
+            const noBatteryMaxDraw = validateInput(stationInputs.noBatteryMaxDraw.value);
+
+            showValidationError(stationInputs.sessionsPerDay, document.getElementById('sessionsError'), sessionsPerDay >= 0);
+            showValidationError(stationInputs.energyPerSession, document.getElementById('energyError'), energyPerSession >= 0);
+            showValidationError(stationInputs.chargerQuantity, document.getElementById('quantityError'), chargerQuantity >= 2 && chargerQuantity <= 12);
+
+            const batteryMaxDraw = getBatteryMaxDraw(sessionsPerDay);
+            const results = calculateCosts(sessionsPerDay, energyPerSession, batteryMaxDraw, noBatteryMaxDraw);
+
+            const monthlySavings = results.noBatteryCost - results.batteryCost;
+            const annualSavings = monthlySavings * 12;
+            const savingsPercent = results.noBatteryCost > 0 ? (monthlySavings / results.noBatteryCost * 100) : 0;
+
+            document.getElementById('battery-energy').textContent = '$' + results.batteryEnergyCharge.toFixed(2);
+            document.getElementById('battery-draw').textContent = batteryMaxDraw.toFixed(0) + ' kW';
+            document.getElementById('battery-demand').textContent = '$' + results.batteryDemandCharge.toFixed(2);
+            document.getElementById('battery-total').textContent = '$' + results.batteryCost.toFixed(2);
+
+            document.getElementById('nobattery-energy').textContent = '$' + results.noBatteryEnergyCharge.toFixed(2);
+            document.getElementById('nobattery-draw').textContent = noBatteryMaxDraw.toFixed(0) + ' kW';
+            document.getElementById('nobattery-demand').textContent = '$' + results.noBatteryDemandCharge.toFixed(2);
+            document.getElementById('nobattery-total').textContent = '$' + results.noBatteryCost.toFixed(2);
+
+            document.getElementById('monthly-savings').textContent = '$' + monthlySavings.toFixed(0);
+            document.getElementById('annual-savings').textContent = '$' + annualSavings.toFixed(0);
+            document.getElementById('percent-savings').textContent = savingsPercent.toFixed(0) + '%';
+
+            const autoCalc = chargerType * chargerQuantity;
+            document.getElementById('maxDrawHint').textContent = 'Auto-calculated: ' + chargerType + ' × ' + chargerQuantity + ' = ' + autoCalc + ' kW';
+        }
+
+        // Auto-update non-battery max draw
+        function updateNoBatteryMaxDraw() {
+            const chargerType = parseInt(stationInputs.chargerType.value) || 200;
+            const chargerQuantity = validateInput(stationInputs.chargerQuantity.value, 2, 12);
+            stationInputs.noBatteryMaxDraw.value = chargerType * chargerQuantity;
+            calculate();
+        }
+
+        // Event listeners
+        tariffSelect.addEventListener('change', renderTariffInputs);
+        utilityRateSelect.addEventListener('change', loadUtilityRate);
+        
+        document.querySelectorAll('input[name="season"]').forEach(radio => {
+            radio.addEventListener('change', () => loadUtilityRate());
+        });
+        
+        Object.values(stationInputs).forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        stationInputs.chargerType.addEventListener('change', updateNoBatteryMaxDraw);
+        stationInputs.chargerQuantity.addEventListener('input', updateNoBatteryMaxDraw);
+
+        // Initialize
+        renderTariffInputs();
+    </script>
+</body>
+</html>
